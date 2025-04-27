@@ -11,8 +11,6 @@
     <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-app-compat.js"></script>
     <!-- 2) Firebase Auth (compat) -->
     <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-auth-compat.js"></script>
-    <!-- 3) Firebase Analytics (compat), optional -->
-    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-analytics-compat.js"></script>
     <!-- 4) Firebase initialization -->
     <script>
         // Web app configuration – obtain from your Firebase console (Web App)
@@ -28,11 +26,10 @@
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         // Initialize Analytics if available
-        if (firebase.analytics) {
-            firebase.analytics();
-        }
-        // Expose the Auth instance for the Unity WebGL plugin
-        window.firebaseAuth = firebase.auth();
+        if (firebase.auth) {
+            window.firebaseAuth = firebase.auth();
+        } else {
+            console.error("firebase.auth() não está disponível");
     </script>
 </head>
 <body>
