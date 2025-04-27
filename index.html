@@ -11,21 +11,27 @@
     <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-app-compat.js"></script>
     <!-- 2) Firebase Auth (compat) -->
     <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-auth-compat.js"></script>
-    <!-- 3) Firebase initialization - REPLACE with your Web app config -->
+    <!-- 3) Firebase Analytics (compat), optional -->
+    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-analytics-compat.js"></script>
+    <!-- 4) Firebase initialization -->
     <script>
-        // Obtain these values by adding a Web app in your Firebase console
+        // Web app configuration – obtain from your Firebase console (Web App)
         const firebaseConfig = {
-            apiKey: "AIzaSyDGthkJzFDo4MSqARUYy4AF8NEUOZmUYgc",                   // Web API Key
-            authDomain: "lanceelucretest.firebaseapp.com",                          // Web Auth Domain
-            projectId: "lanceelucretest",                                           // Project ID
-            storageBucket: "lanceelucretest.appspot.com",                           // Storage Bucket
-            messagingSenderId: "84810701404",                                       // Messaging Sender ID
-            appId: "1:84810701404:web:XXXXXXXXXXXXXXXXXXXXXX",                     // **Web** App ID (replace placeholder)
-            measurementId: "G-XXXXXXXXXX"                                           // Measurement ID (optional)
+            apiKey: "AIzaSyCM1infhUIudFTAKLoKBZcberS7G5Yuk8A",
+            authDomain: "lanceelucretest.firebaseapp.com",
+            projectId: "lanceelucretest",
+            storageBucket: "lanceelucretest.firebasestorage.app",
+            messagingSenderId: "84810701404",
+            appId: "1:84810701404:web:565ca18be79d244969a499",
+            measurementId: "G-6J75LRZ50H"
         };
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
-        // Expose the Auth instance for the JS plugin
+        // Initialize Analytics if available
+        if (firebase.analytics) {
+            firebase.analytics();
+        }
+        // Expose the Auth instance for the Unity WebGL plugin
         window.firebaseAuth = firebase.auth();
     </script>
 </head>
@@ -59,7 +65,10 @@
             warningBanner.appendChild(div);
             if (type === "error") div.style = "background: red; padding: 10px;";
             else if (type === "warning") div.style = "background: yellow; padding: 10px;";
-            setTimeout(function () { warningBanner.removeChild(div); updateBannerVisibility(); }, 5000);
+            setTimeout(function () {
+                warningBanner.removeChild(div);
+                updateBannerVisibility();
+            }, 5000);
             updateBannerVisibility();
         }
 
@@ -79,12 +88,14 @@
         document.querySelector("#unity-loading-bar").style.display = "block";
         var script = document.createElement("script");
         script.src = loaderUrl;
-        script.onload = () => createUnityInstance(canvas, config, (p) => {
-            document.querySelector("#unity-progress-bar-full").style.width = 100 * p + "%";
+        script.onload = () => createUnityInstance(canvas, config, (progress) => {
+            document.querySelector("#unity-progress-bar-full").style.width = 100 * progress + "%";
         }).then((unityInstance) => {
             document.querySelector("#unity-loading-bar").style.display = "none";
             document.querySelector("#unity-fullscreen-button").onclick = () => unityInstance.SetFullscreen(1);
-        }).catch(alert);
+        }).catch((e) => {
+            alert(e);
+        });
         document.body.appendChild(script);
     </script>
 </body>
