@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "84810701404",
+    "project_id": "lanceelucretest",
+    "storage_bucket": "lanceelucretest.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:84810701404:android:63d820f48d13c90469a499",
+        "android_client_info": {
+          "package_name": "com.artificiumstudio.lanceelucre"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDGthkJzFDo4MSqARUYy4AF8NEUOZmUYgc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
