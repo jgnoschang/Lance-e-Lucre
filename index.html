@@ -17,15 +17,15 @@
     <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-analytics-compat.js"></script>
 
     <script>
-        // Web app configuration – copie do seu Firebase console (Web App)
+        // Your Firebase Web App configuration (copy from Firebase console)
         const firebaseConfig = {
             apiKey: "AIzaSyCM1infhUIudFTAKLoKBZcberS7G5Yuk8A",
             authDomain: "lanceelucretest.firebaseapp.com",
             projectId: "lanceelucretest",
             storageBucket: "lanceelucretest.appspot.com",
             messagingSenderId: "84810701404",
-            appId: "1:84810701404:web:565ca18be79d244969a499",
-            measurementId: "G-6J75LRZ50H"
+            appId: "1:84810701404:web:XXXXXXXXXXXXXXXXXXXXXX",
+            measurementId: "G-XXXXXXXXXX"
         };
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
@@ -33,7 +33,7 @@
         if (firebase.analytics) {
             firebase.analytics();
         }
-        // Expose Auth & Firestore for Unity WebGL .jslib plugins
+        // Expose Auth & Firestore for Unity WebGL plugins
         window.firebaseAuth = firebase.auth();
         window.firestore = firebase.firestore();
     </script>
