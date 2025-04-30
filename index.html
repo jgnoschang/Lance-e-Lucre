@@ -8,36 +8,38 @@
     <link rel="stylesheet" href="TemplateData/style.css" />
 
     <!-- 1) Firebase App (compat) -->
-    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-app-compat.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/12.1.0/firebase-app-compat.js"></script>
     <!-- 2) Firebase Auth (compat) -->
-    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-auth-compat.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/12.1.0/firebase-auth-compat.js"></script>
     <!-- 3) Firebase Firestore (compat) -->
-    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore-compat.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore-compat.js"></script>
     <!-- 4) Firebase Analytics (compat) -->
-    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-analytics-compat.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/12.1.0/firebase-analytics-compat.js"></script>
 
     <script>
         // === Inicialização do Firebase ===
-        const firebaseConfig = {
-            apiKey: "AIzaSyCM1infhUIudFTAKLoKBZcberS7G5Yuk8A",
-            authDomain: "lanceelucretest.firebaseapp.com",
-            projectId: "lanceelucretest",
-            storageBucket: "lanceelucretest.appspot.com",
-            messagingSenderId: "84810701404",
-            appId: "1:84810701404:web:XXXXXXXXXXXXXXXXXXXXXX",
-            measurementId: "G-XXXXXXXXXX"
-        };
-        firebase.initializeApp(firebaseConfig);
-        if (firebase.analytics) {
-            firebase.analytics();
-        }
+        document.addEventListener('DOMContentLoaded', function () {
+            const firebaseConfig = {
+                apiKey: "AIzaSyCM1infhUIudFTAKLoKBZcberS7G5Yuk8A",
+                authDomain: "lanceelucretest.firebaseapp.com",
+                projectId: "lanceelucretest",
+                storageBucket: "lanceelucretest.appspot.com",
+                messagingSenderId: "84810701404",
+                appId: "1:84810701404:web:XXXXXXXXXXXXXXXXXXXXXX",
+                measurementId: "G-XXXXXXXXXX"
+            };
+            firebase.initializeApp(firebaseConfig);
+            if (firebase.analytics) {
+                firebase.analytics();
+            }
 
-        // === Exposição global para Unity WebGL ===
-        window.firebaseAuth = firebase.auth();
-        window.firestore = firebase.firestore();
-        // Também garantir o identificador direto no escopo global:
-        var firebaseAuth = window.firebaseAuth;
-        var firestore = window.firestore;
+            // === Exposição global para Unity WebGL ===
+            window.firebaseAuth = firebase.auth();
+            window.firestore = firebase.firestore();
+            // também como variáveis diretas
+            var firebaseAuth = window.firebaseAuth;
+            var firestore = window.firestore;
+        });
     </script>
 </head>
 <body>
@@ -57,63 +59,63 @@
         </div>
     </div>
 
-    <!-- === Loader do Unity WebGL (sempre por último) === -->
+    <!-- Loader do Unity WebGL só depois de tudo carregado -->
     <script>
-        var canvas = document.querySelector("#unity-canvas");
-        var buildUrl = "Build";
-        var loaderUrl = buildUrl + "/Lance-e-Lucre.loader.js";
-        var config = {
-            dataUrl: buildUrl + "/Lance-e-Lucre.data",
-            frameworkUrl: buildUrl + "/Lance-e-Lucre.framework.js",
-            codeUrl: buildUrl + "/Lance-e-Lucre.wasm",
-            streamingAssetsUrl: "StreamingAssets",
-            companyName: "DefaultCompany",
-            productName: "LanceELucre",
-            productVersion: "1.0",
-            showBanner: unityShowBanner
-        };
+        window.onload = function () {
+            var canvas = document.querySelector("#unity-canvas");
+            var buildUrl = "Build";
+            var loaderUrl = buildUrl + "/Lance-e-Lucre.loader.js";
+            var config = {
+                dataUrl: buildUrl + "/Lance-e-Lucre.data",
+                frameworkUrl: buildUrl + "/Lance-e-Lucre.framework.js",
+                codeUrl: buildUrl + "/Lance-e-Lucre.wasm",
+                streamingAssetsUrl: "StreamingAssets",
+                companyName: "DefaultCompany",
+                productName: "LanceELucre",
+                productVersion: "1.0",
+                showBanner: unityShowBanner
+            };
 
-        function unityShowBanner(msg, type) {
-            var warningBanner = document.querySelector("#unity-warning");
-            function updateBannerVisibility() {
-                warningBanner.style.display = warningBanner.children.length ? "block" : "none";
-            }
-            var div = document.createElement("div");
-            div.innerHTML = msg;
-            warningBanner.appendChild(div);
-            if (type === "error") div.style = "background: red; padding: 10px;";
-            if (type === "warning") div.style = "background: yellow; padding: 10px;";
-            setTimeout(function () {
-                warningBanner.removeChild(div);
-                updateBannerVisibility();
-            }, 5000);
-            updateBannerVisibility();
-        }
-
-        // Exibe a barra de loading
-        document.querySelector("#unity-loading-bar").style.display = "block";
-
-        // Carrega o loader.js, que por sua vez carrega o framework.js
-        var script = document.createElement("script");
-        script.src = loaderUrl;
-        script.onload = function () {
-            createUnityInstance(canvas, config,
-                function (progress) {
-                    document.querySelector("#unity-progress-bar-full").style.width = 100 * progress + "%";
+            function unityShowBanner(msg, type) {
+                var warningBanner = document.querySelector("#unity-warning");
+                function updateBannerVisibility() {
+                    warningBanner.style.display = warningBanner.children.length ? "block" : "none";
                 }
-            ).then(function (unityInstance) {
-                // Torna a instância disponível globalmente para plugins JS
-                window.unityInstance = unityInstance;
+                var div = document.createElement("div");
+                div.innerHTML = msg;
+                warningBanner.appendChild(div);
+                if (type === "error") div.style = "background: red; padding: 10px;";
+                if (type === "warning") div.style = "background: yellow; padding: 10px;";
+                setTimeout(function () {
+                    warningBanner.removeChild(div);
+                    updateBannerVisibility();
+                }, 5000);
+                updateBannerVisibility();
+            }
 
-                document.querySelector("#unity-loading-bar").style.display = "none";
-                document.querySelector("#unity-fullscreen-button").onclick = function () {
-                    unityInstance.SetFullscreen(1);
-                };
-            }).catch(function (message) {
-                alert(message);
-            });
+            document.querySelector("#unity-loading-bar").style.display = "block";
+
+            // injeta e carrega o loader do Unity
+            var script = document.createElement("script");
+            script.src = loaderUrl;
+            script.onload = function () {
+                createUnityInstance(canvas, config,
+                    function (progress) {
+                        document.querySelector("#unity-progress-bar-full").style.width = 100 * progress + "%";
+                    }
+                ).then(function (unityInstance) {
+                    // torna global para plugins JS
+                    window.unityInstance = unityInstance;
+                    document.querySelector("#unity-loading-bar").style.display = "none";
+                    document.querySelector("#unity-fullscreen-button").onclick = function () {
+                        unityInstance.SetFullscreen(1);
+                    };
+                }).catch(function (message) {
+                    alert(message);
+                });
+            };
+            document.body.appendChild(script);
         };
-        document.body.appendChild(script);
     </script>
 </body>
 </html>
