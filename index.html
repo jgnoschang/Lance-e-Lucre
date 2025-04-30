@@ -7,17 +7,16 @@
   <link rel="shortcut icon" href="TemplateData/favicon.ico" />
   <link rel="stylesheet" href="TemplateData/style.css" />
 
-  <!-- 1) Firebase App & Auth & Firestore (compat) -->
-  <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore-compat.js"></script>
+  <!-- 1) Firebase App & Auth & Firestore (compat) – versão web 9.x -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
   <!-- opcional: Analytics compat -->
-  <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-analytics-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-analytics-compat.js"></script>
 
-  <!-- 2) Inicia o Firebase imediatamente -->
+  <!-- 2) Inicia o Firebase assim que os scripts estiverem carregados -->
   <script>
-    // DEBUG: veja se o SDK carregou
-    console.log("Before init, firebase:", typeof firebase);
+    console.log("Before init, firebase:", typeof firebase);  // DEBUG
 
     const firebaseConfig = {
       apiKey: "AIzaSyCM1infhUIudFTAKLoKBZcberS7G5Yuk8A",
@@ -31,10 +30,9 @@
     firebase.initializeApp(firebaseConfig);
     if (firebase.analytics) firebase.analytics();
 
-    // DEBUG: confirme que firebase agora existe
-    console.log("After init, firebase:", typeof firebase);
+    console.log("After init, firebase:", typeof firebase);  // DEBUG
 
-    // 3) exponha para seus plugins .jslib
+    // Exponha para o seu .jslib
     window.firebaseAuth = firebase.auth();
     window.firestore  = firebase.firestore();
   </script>
@@ -56,9 +54,9 @@
     </div>
   </div>
 
-  <!-- 4) Loader Unity dentro de window.onload -->
+  <!-- 3) Depois de tudo, carrega o Loader do Unity -->
   <script>
-    window.onload = function () {
+    window.onload = function() {
       var canvas = document.querySelector("#unity-canvas");
       var buildUrl = "Build";
       var loaderUrl = buildUrl + "/Lance-e-Lucre.loader.js";
@@ -87,15 +85,15 @@
 
       var s = document.createElement("script");
       s.src = loaderUrl;
-      s.onload = function () {
-        createUnityInstance(canvas, config, function (p) {
+      s.onload = function() {
+        createUnityInstance(canvas, config, function(progress) {
           document.querySelector("#unity-progress-bar-full")
-                  .style.width = (100 * p) + "%";
-        }).then(function (unityInstance) {
-          window.unityInstance = unityInstance; // opcional
+                  .style.width = (100 * progress) + "%";
+        }).then(function(unityInstance) {
+          window.unityInstance = unityInstance;
           document.querySelector("#unity-loading-bar").style.display = "none";
           document.querySelector("#unity-fullscreen-button")
-                  .onclick = function(){ unityInstance.SetFullscreen(1); };
+                  .onclick = function() { unityInstance.SetFullscreen(1); };
         }).catch(alert);
       };
       document.body.appendChild(s);
