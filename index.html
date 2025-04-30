@@ -33,10 +33,9 @@
         }
 
         // === Exposição global para Unity WebGL ===
-        // Garante que o framework do Unity encontre estas variáveis
         window.firebaseAuth = firebase.auth();
         window.firestore = firebase.firestore();
-        // Além disso, criamos as referências diretas:
+        // Também garantir o identificador direto no escopo global:
         var firebaseAuth = window.firebaseAuth;
         var firestore = window.firestore;
     </script>
@@ -103,6 +102,9 @@
                     document.querySelector("#unity-progress-bar-full").style.width = 100 * progress + "%";
                 }
             ).then(function (unityInstance) {
+                // Torna a instância disponível globalmente para plugins JS
+                window.unityInstance = unityInstance;
+
                 document.querySelector("#unity-loading-bar").style.display = "none";
                 document.querySelector("#unity-fullscreen-button").onclick = function () {
                     unityInstance.SetFullscreen(1);
