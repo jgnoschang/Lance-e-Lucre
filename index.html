@@ -2,49 +2,43 @@
 <html lang="en-us">
 <head>
     <meta charset="utf-8" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Unity WebGL | LanceELucre</title>
     <link rel="shortcut icon" href="TemplateData/favicon.ico" />
     <link rel="stylesheet" href="TemplateData/style.css" />
 
-    <!-- 1) Firebase App (compat) -->
-    <script defer src="https://www.gstatic.com/firebasejs/12.1.0/firebase-app-compat.js"></script>
-    <!-- 2) Firebase Auth (compat) -->
-    <script defer src="https://www.gstatic.com/firebasejs/12.1.0/firebase-auth-compat.js"></script>
-    <!-- 3) Firebase Firestore (compat) -->
-    <script defer src="https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore-compat.js"></script>
-    <!-- 4) Firebase Analytics (compat) -->
-    <script defer src="https://www.gstatic.com/firebasejs/12.1.0/firebase-analytics-compat.js"></script>
+    <!-- 1) Carrega o SDK do Firebase sem defer -->
+    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-analytics-compat.js"></script>
 
     <script>
-        // === Inicialização do Firebase ===
-        document.addEventListener('DOMContentLoaded', function () {
-            const firebaseConfig = {
+        // 2) Inicializa o Firebase imediatamente
+        (function () {
+            const config = {
                 apiKey: "AIzaSyCM1infhUIudFTAKLoKBZcberS7G5Yuk8A",
                 authDomain: "lanceelucretest.firebaseapp.com",
                 projectId: "lanceelucretest",
-                storageBucket: "lanceelucretest.firebasestorage.app",
+                storageBucket: "lanceelucretest.firebasestorage.app", // ajuste conforme seu bucket real :contentReference[oaicite:4]{index=4}
                 messagingSenderId: "84810701404",
                 appId: "1:84810701404:web:565ca18be79d244969a499",
-                measurementId: "G-6J75LRZ50H"
+                measurementId: "G-XXXXXXXXXX"
             };
-            firebase.initializeApp(firebaseConfig);
-            if (firebase.analytics) {
-                firebase.analytics();
-            }
+            firebase.initializeApp(config);                                                             : contentReference[oaicite: 5]{ index = 5 }
+            if (firebase.analytics) firebase.analytics();
 
-            // === Exposição global para Unity WebGL ===
-            window.firebaseAuth = firebase.auth();
+            // 3) Exponha as instâncias no escopo global
+            window.firebaseAuth = firebase.auth();                                                     : contentReference[oaicite: 6]{ index = 6 }
             window.firestore = firebase.firestore();
-            // também como variáveis diretas
+            // também em variáveis diretas se alguém usar 'firebaseAuth' sem 'window'
             var firebaseAuth = window.firebaseAuth;
             var firestore = window.firestore;
-        });
+        })();
     </script>
 </head>
 <body>
     <div id="unity-container" class="unity-desktop">
-        <canvas id="unity-canvas" width="960" height="600" tabindex="-1"></canvas>
+        <canvas id="unity-canvas" width="960" height="600"></canvas>
         <div id="unity-loading-bar">
             <div id="unity-logo"></div>
             <div id="unity-progress-bar-empty">
@@ -59,7 +53,7 @@
         </div>
     </div>
 
-    <!-- Loader do Unity WebGL só depois de tudo carregado -->
+    <!-- 4) Carrega o Loader do Unity dentro de window.onload -->
     <script>
         window.onload = function () {
             var canvas = document.querySelector("#unity-canvas");
@@ -69,52 +63,36 @@
                 dataUrl: buildUrl + "/Lance-e-Lucre.data",
                 frameworkUrl: buildUrl + "/Lance-e-Lucre.framework.js",
                 codeUrl: buildUrl + "/Lance-e-Lucre.wasm",
-                streamingAssetsUrl: "StreamingAssets",
-                companyName: "DefaultCompany",
-                productName: "LanceELucre",
-                productVersion: "1.0",
                 showBanner: unityShowBanner
             };
 
             function unityShowBanner(msg, type) {
-                var warningBanner = document.querySelector("#unity-warning");
-                function updateBannerVisibility() {
-                    warningBanner.style.display = warningBanner.children.length ? "block" : "none";
-                }
+                var warn = document.querySelector("#unity-warning");
                 var div = document.createElement("div");
                 div.innerHTML = msg;
-                warningBanner.appendChild(div);
-                if (type === "error") div.style = "background: red; padding: 10px;";
-                if (type === "warning") div.style = "background: yellow; padding: 10px;";
-                setTimeout(function () {
-                    warningBanner.removeChild(div);
-                    updateBannerVisibility();
-                }, 5000);
-                updateBannerVisibility();
+                div.style = (type === "error" ? "background:red;" : "background:yellow;") + "padding:8px;";
+                warn.appendChild(div);
+                setTimeout(() => warn.removeChild(div), 5000);
             }
 
             document.querySelector("#unity-loading-bar").style.display = "block";
 
-            // injeta e carrega o loader do Unity
-            var script = document.createElement("script");
-            script.src = loaderUrl;
-            script.onload = function () {
-                createUnityInstance(canvas, config,
-                    function (progress) {
-                        document.querySelector("#unity-progress-bar-full").style.width = 100 * progress + "%";
-                    }
-                ).then(function (unityInstance) {
-                    // torna global para plugins JS
+            // injeta o loader.js do Unity
+            var s = document.createElement("script");
+            s.src = loaderUrl;
+            s.onload = function () {
+                createUnityInstance(canvas, config, function (p) {
+                    document.querySelector("#unity-progress-bar-full")
+                        .style.width = (100 * p) + "%";
+                }).then(function (unityInstance) {
+                    // 5) Globaliza a instância para plugins JS
                     window.unityInstance = unityInstance;
                     document.querySelector("#unity-loading-bar").style.display = "none";
-                    document.querySelector("#unity-fullscreen-button").onclick = function () {
-                        unityInstance.SetFullscreen(1);
-                    };
-                }).catch(function (message) {
-                    alert(message);
-                });
+                    document.querySelector("#unity-fullscreen-button")
+                        .onclick = () => unityInstance.SetFullscreen(1);
+                }).catch(alert);
             };
-            document.body.appendChild(script);
+            document.body.appendChild(s);
         };
     </script>
 </body>
