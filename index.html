@@ -13,11 +13,11 @@
     <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-auth-compat.js"></script>
     <!-- 3) Firebase Firestore (compat) -->
     <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore-compat.js"></script>
-    <!-- 4) Optional: Firebase Analytics (compat) -->
+    <!-- 4) Firebase Analytics (compat) -->
     <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-analytics-compat.js"></script>
 
     <script>
-        // Your Firebase Web App configuration (copy from Firebase console)
+        // === Inicialização do Firebase ===
         const firebaseConfig = {
             apiKey: "AIzaSyCM1infhUIudFTAKLoKBZcberS7G5Yuk8A",
             authDomain: "lanceelucretest.firebaseapp.com",
@@ -27,15 +27,18 @@
             appId: "1:84810701404:web:XXXXXXXXXXXXXXXXXXXXXX",
             measurementId: "G-XXXXXXXXXX"
         };
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
-        // Initialize Analytics if needed
         if (firebase.analytics) {
             firebase.analytics();
         }
-        // Expose Auth & Firestore for Unity WebGL plugins
+
+        // === Exposição global para Unity WebGL ===
+        // Garante que o framework do Unity encontre estas variáveis
         window.firebaseAuth = firebase.auth();
         window.firestore = firebase.firestore();
+        // Além disso, criamos as referências diretas:
+        var firebaseAuth = window.firebaseAuth;
+        var firestore = window.firestore;
     </script>
 </head>
 <body>
@@ -55,26 +58,9 @@
         </div>
     </div>
 
+    <!-- === Loader do Unity WebGL (sempre por último) === -->
     <script>
-        // Standard Unity loader code
         var canvas = document.querySelector("#unity-canvas");
-        function unityShowBanner(msg, type) {
-            var warningBanner = document.querySelector("#unity-warning");
-            function updateBannerVisibility() {
-                warningBanner.style.display = warningBanner.children.length ? "block" : "none";
-            }
-            var div = document.createElement("div");
-            div.innerHTML = msg;
-            warningBanner.appendChild(div);
-            if (type === "error") div.style = "background: red; padding: 10px;";
-            else if (type === "warning") div.style = "background: yellow; padding: 10px;";
-            setTimeout(function () {
-                warningBanner.removeChild(div);
-                updateBannerVisibility();
-            }, 5000);
-            updateBannerVisibility();
-        }
-
         var buildUrl = "Build";
         var loaderUrl = buildUrl + "/Lance-e-Lucre.loader.js";
         var config = {
@@ -85,16 +71,38 @@
             companyName: "DefaultCompany",
             productName: "LanceELucre",
             productVersion: "1.0",
-            showBanner: unityShowBanner,
+            showBanner: unityShowBanner
         };
 
+        function unityShowBanner(msg, type) {
+            var warningBanner = document.querySelector("#unity-warning");
+            function updateBannerVisibility() {
+                warningBanner.style.display = warningBanner.children.length ? "block" : "none";
+            }
+            var div = document.createElement("div");
+            div.innerHTML = msg;
+            warningBanner.appendChild(div);
+            if (type === "error") div.style = "background: red; padding: 10px;";
+            if (type === "warning") div.style = "background: yellow; padding: 10px;";
+            setTimeout(function () {
+                warningBanner.removeChild(div);
+                updateBannerVisibility();
+            }, 5000);
+            updateBannerVisibility();
+        }
+
+        // Exibe a barra de loading
         document.querySelector("#unity-loading-bar").style.display = "block";
+
+        // Carrega o loader.js, que por sua vez carrega o framework.js
         var script = document.createElement("script");
         script.src = loaderUrl;
         script.onload = function () {
-            createUnityInstance(canvas, config, function (progress) {
-                document.querySelector("#unity-progress-bar-full").style.width = 100 * progress + "%";
-            }).then(function (unityInstance) {
+            createUnityInstance(canvas, config,
+                function (progress) {
+                    document.querySelector("#unity-progress-bar-full").style.width = 100 * progress + "%";
+                }
+            ).then(function (unityInstance) {
                 document.querySelector("#unity-loading-bar").style.display = "none";
                 document.querySelector("#unity-fullscreen-button").onclick = function () {
                     unityInstance.SetFullscreen(1);
