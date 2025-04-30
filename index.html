@@ -11,25 +11,31 @@
     <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-app-compat.js"></script>
     <!-- 2) Firebase Auth (compat) -->
     <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-auth-compat.js"></script>
-    <!-- 4) Firebase initialization -->
+    <!-- 3) Firebase Firestore (compat) -->
+    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore-compat.js"></script>
+    <!-- 4) Optional: Firebase Analytics (compat) -->
+    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-analytics-compat.js"></script>
+
     <script>
-        // Web app configuration – obtain from your Firebase console (Web App)
+        // Web app configuration – copie do seu Firebase console (Web App)
         const firebaseConfig = {
             apiKey: "AIzaSyCM1infhUIudFTAKLoKBZcberS7G5Yuk8A",
             authDomain: "lanceelucretest.firebaseapp.com",
             projectId: "lanceelucretest",
-            storageBucket: "lanceelucretest.firebasestorage.app",
+            storageBucket: "lanceelucretest.appspot.com",
             messagingSenderId: "84810701404",
             appId: "1:84810701404:web:565ca18be79d244969a499",
             measurementId: "G-6J75LRZ50H"
         };
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
-        // Initialize Analytics if available
-        if (firebase.auth) {
-            window.firebaseAuth = firebase.auth();
-        } else {
-            console.error("firebase.auth() não está disponível");
+        // Initialize Analytics if needed
+        if (firebase.analytics) {
+            firebase.analytics();
+        }
+        // Expose Auth & Firestore for Unity WebGL .jslib plugins
+        window.firebaseAuth = firebase.auth();
+        window.firestore = firebase.firestore();
     </script>
 </head>
 <body>
@@ -85,14 +91,18 @@
         document.querySelector("#unity-loading-bar").style.display = "block";
         var script = document.createElement("script");
         script.src = loaderUrl;
-        script.onload = () => createUnityInstance(canvas, config, (progress) => {
-            document.querySelector("#unity-progress-bar-full").style.width = 100 * progress + "%";
-        }).then((unityInstance) => {
-            document.querySelector("#unity-loading-bar").style.display = "none";
-            document.querySelector("#unity-fullscreen-button").onclick = () => unityInstance.SetFullscreen(1);
-        }).catch((e) => {
-            alert(e);
-        });
+        script.onload = function () {
+            createUnityInstance(canvas, config, function (progress) {
+                document.querySelector("#unity-progress-bar-full").style.width = 100 * progress + "%";
+            }).then(function (unityInstance) {
+                document.querySelector("#unity-loading-bar").style.display = "none";
+                document.querySelector("#unity-fullscreen-button").onclick = function () {
+                    unityInstance.SetFullscreen(1);
+                };
+            }).catch(function (message) {
+                alert(message);
+            });
+        };
         document.body.appendChild(script);
     </script>
 </body>
