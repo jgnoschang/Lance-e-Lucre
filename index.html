@@ -14,10 +14,9 @@
   <!-- opcional: Analytics compat -->
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-analytics-compat.js"></script>
 
-  <!-- 2) Inicia o Firebase assim que os scripts estiverem carregados -->
+  <!-- 2) Inicializa o Firebase imediatamente -->
   <script>
-    console.log("Before init, firebase:", typeof firebase);  // DEBUG
-
+    // Configuração do Web App (copie do console Firebase)
     const firebaseConfig = {
       apiKey: "AIzaSyCM1infhUIudFTAKLoKBZcberS7G5Yuk8A",
       authDomain: "lanceelucretest.firebaseapp.com",
@@ -27,12 +26,10 @@
       appId: "1:84810701404:web:565ca18be79d244969a499",
       measurementId: "G-6J75LRZ50H"
     };
+    // Inicializa SDKs
     firebase.initializeApp(firebaseConfig);
     if (firebase.analytics) firebase.analytics();
-
-    console.log("After init, firebase:", typeof firebase);  // DEBUG
-
-    // Exponha para o seu .jslib
+    // Exponha globalmente para o WebGL .jslib
     window.firebaseAuth = firebase.auth();
     window.firestore  = firebase.firestore();
   </script>
@@ -54,7 +51,7 @@
     </div>
   </div>
 
-  <!-- 3) Depois de tudo, carrega o Loader do Unity -->
+  <!-- 3) Loader Unity dentro de window.onload -->
   <script>
     window.onload = function() {
       var canvas = document.querySelector("#unity-canvas");
@@ -90,10 +87,10 @@
           document.querySelector("#unity-progress-bar-full")
                   .style.width = (100 * progress) + "%";
         }).then(function(unityInstance) {
-          window.unityInstance = unityInstance;
+          window.unityInstance = unityInstance; // se precisar em plugins
           document.querySelector("#unity-loading-bar").style.display = "none";
           document.querySelector("#unity-fullscreen-button")
-                  .onclick = function() { unityInstance.SetFullscreen(1); };
+                  .onclick = function(){ unityInstance.SetFullscreen(1); };
         }).catch(alert);
       };
       document.body.appendChild(s);
